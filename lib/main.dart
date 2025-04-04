@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           return ChangeNotifierProvider(
             create: (context) => CounterState(),
             child: MaterialApp(
-              title: 'Counter',
+              title: 'Kounter',
               theme: ThemeData(
                 useMaterial3: true,
                 colorScheme: ColorScheme.fromSeed(
