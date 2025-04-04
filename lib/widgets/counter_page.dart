@@ -3,11 +3,92 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../states/counter_state.dart';
 import '../states/theme_state.dart';
 import 'app_logo.dart';
 
-class CounterPage extends StatelessWidget {
+class CounterPage extends StatefulWidget {
+  @override
+  State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+  BannerAd? _bannerAd;
+  bool _isLoaded = false;
+
+  // Test ad unit ID for Android
+  final adUnitId = 'ca-app-pub-3940256099942544/9214589741';
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_bannerAd == null) {
+      loadAd();
+    }
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  /// Loads a banner ad.
+  void loadAd() async {
+    if (kIsWeb) {
+      debugPrint('Skipping ad load on web platform');
+      return;
+    }
+
+    try {
+      // Get an AnchoredAdaptiveBannerAdSize before loading the ad.
+      final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.sizeOf(context).width.truncate());
+      
+      if (size == null) {
+        debugPrint('Failed to get ad size');
+        return;
+      }
+
+      debugPrint('Loading banner ad with size: ${size.width}x${size.height}');
+      
+      _bannerAd = BannerAd(
+        adUnitId: adUnitId,
+        request: const AdRequest(),
+        size: size,
+        listener: BannerAdListener(
+          // Called when an ad is successfully received.
+          onAdLoaded: (ad) {
+            debugPrint('Ad loaded successfully');
+            setState(() {
+              _isLoaded = true;
+            });
+          },
+          // Called when an ad request failed.
+          onAdFailedToLoad: (ad, err) {
+            debugPrint('BannerAd failed to load: $err');
+            debugPrint('Error code: ${err.code}');
+            debugPrint('Error message: ${err.message}');
+            debugPrint('Error domain: ${err.domain}');
+            // Dispose the ad here to free resources.
+            ad.dispose();
+          },
+          onAdImpression: (ad) {
+            debugPrint('Ad impression recorded');
+          },
+        ),
+      )..load();
+    } catch (e) {
+      debugPrint('Error loading ad: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var counterState = context.watch<CounterState>();
@@ -58,7 +139,7 @@ class CounterPage extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 16,
+                bottom: _bannerAd != null && _isLoaded ? _bannerAd!.size.height.toDouble() + 48 : 48,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -98,12 +179,6 @@ class CounterPage extends StatelessWidget {
                                     decoration: TextDecoration.underline,
                                   ),
                                 ),
-                                SizedBox(width: 4),
-                                Icon(
-                                  Icons.open_in_new,
-                                  size: 12,
-                                  color: Theme.of(context).colorScheme.onSurface.withAlpha(179),
-                                ),
                               ],
                             ),
                           ),
@@ -117,6 +192,19 @@ class CounterPage extends StatelessWidget {
                         ),
                 ),
               ),
+              if (_bannerAd != null && _isLoaded)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    child: SizedBox(
+                      width: _bannerAd!.size.width.toDouble(),
+                      height: _bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: _bannerAd!),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'dart:io';
 import 'states/theme_state.dart';
 import 'states/counter_state.dart';
 import 'widgets/counter_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  if (!kIsWeb) {
+    MobileAds.instance.initialize();
+  }
+
   runApp(MyApp());
 }
 
