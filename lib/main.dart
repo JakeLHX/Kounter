@@ -7,14 +7,18 @@ import 'states/theme_state.dart';
 import 'states/counter_state.dart';
 import 'widgets/counter_page.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   if (!kIsWeb) {
-    MobileAds.instance.initialize();
+    try {
+      await MobileAds.instance.initialize();
+    } catch (e) {
+      debugPrint('Failed to initialize ads: $e');
+    }
   }
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

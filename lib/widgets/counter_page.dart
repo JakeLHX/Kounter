@@ -17,8 +17,8 @@ class _CounterPageState extends State<CounterPage> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
 
-  // Test ad unit ID for Android
-  final adUnitId = 'ca-app-pub-3940256099942544/9214589741';
+  // Production banner ad unit ID for Android (NOT the app ID - should contain a forward slash '/')
+  final adUnitId = 'ca-app-pub-1009677311497002/5155331165'; // Get this from AdMob console under Ad Units section
 
   @override
   void initState() {
@@ -46,6 +46,12 @@ class _CounterPageState extends State<CounterPage> {
       return;
     }
 
+    // Prevent multiple simultaneous ad loads
+    if (_bannerAd != null) {
+      debugPrint('Ad load already in progress');
+      return;
+    }
+
     try {
       // Get an AnchoredAdaptiveBannerAdSize before loading the ad.
       final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
@@ -63,29 +69,40 @@ class _CounterPageState extends State<CounterPage> {
         request: const AdRequest(),
         size: size,
         listener: BannerAdListener(
-          // Called when an ad is successfully received.
           onAdLoaded: (ad) {
             debugPrint('Ad loaded successfully');
-            setState(() {
-              _isLoaded = true;
-            });
+            if (mounted) {
+              setState(() {
+                _isLoaded = true;
+              });
+            }
           },
-          // Called when an ad request failed.
           onAdFailedToLoad: (ad, err) {
             debugPrint('BannerAd failed to load: $err');
-            debugPrint('Error code: ${err.code}');
-            debugPrint('Error message: ${err.message}');
-            debugPrint('Error domain: ${err.domain}');
-            // Dispose the ad here to free resources.
             ad.dispose();
+            _bannerAd = null;
+            if (mounted) {
+              setState(() {
+                _isLoaded = false;
+              });
+            }
           },
           onAdImpression: (ad) {
             debugPrint('Ad impression recorded');
           },
         ),
-      )..load();
+      );
+
+      await _bannerAd?.load();
     } catch (e) {
       debugPrint('Error loading ad: $e');
+      _bannerAd?.dispose();
+      _bannerAd = null;
+      if (mounted) {
+        setState(() {
+          _isLoaded = false;
+        });
+      }
     }
   }
 

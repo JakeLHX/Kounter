@@ -1,4 +1,4 @@
-package com.example.kounter
+package com.qbitapps.kounter
 
 import io.flutter.embedding.android.FlutterActivity
 
