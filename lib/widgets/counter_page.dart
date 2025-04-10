@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../states/counter_state.dart';
 import '../states/theme_state.dart';
+import '../config/ad_config.dart';
 import 'app_logo.dart';
 
 class CounterPage extends StatefulWidget {
@@ -17,8 +18,8 @@ class _CounterPageState extends State<CounterPage> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
 
-  // Production banner ad unit ID for Android (NOT the app ID - should contain a forward slash '/')
-  final adUnitId = 'ca-app-pub-1009677311497002/5155331165'; // Get this from AdMob console under Ad Units section
+  // Get ad unit ID from configuration
+  final adUnitId = AdConfig.bannerAdUnitId;
 
   @override
   void initState() {
