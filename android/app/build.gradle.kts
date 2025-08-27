@@ -58,3 +58,8 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // AndroidX Core for WindowCompat functionality
+    implementation("androidx.core:core-ktx:1.12.0")
+}
