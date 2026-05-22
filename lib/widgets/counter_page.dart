@@ -55,7 +55,7 @@ class _CounterPageState extends State<CounterPage> {
 
     try {
       // Get an AnchoredAdaptiveBannerAdSize before loading the ad.
-      final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+      final size = await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
           MediaQuery.sizeOf(context).width.truncate());
       
       if (size == null) {

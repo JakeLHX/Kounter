@@ -16,8 +16,8 @@ Kounter is a Flutter-based application that provides a simple counter functional
 
 ### Prerequisites
 
-- Flutter SDK (>=3.0.0)
-- Dart SDK (>=3.0.0)
+- Flutter SDK (>=3.44.0)
+- Dart SDK (>=3.12.0)
 - Android Studio / VS Code with Flutter extensions
 - Git
 
@@ -60,10 +60,11 @@ kounter/
 
 ## Dependencies
 
-- provider: ^6.0.0 - State management
-- url_launcher: ^6.0.0 - URL handling
-- flutter_lints: ^2.0.0 - Linting rules
-- flutter_launcher_icons: ^0.13.1 - App icon generation
+- provider: ^6.1.5 - State management
+- url_launcher: ^6.3.2 - URL handling
+- google_mobile_ads: ^8.0.0 - Banner ads (mobile)
+- flutter_lints: ^6.0.0 - Linting rules
+- flutter_launcher_icons: ^0.14.4 - App icon generation
 
 ## Contributing
 
